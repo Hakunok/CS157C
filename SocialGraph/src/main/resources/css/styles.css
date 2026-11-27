@@ -1,0 +1,113 @@
+.root {
+    -fx-font-family: "Helvetica Neue", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #F8FAFC;
+}
+
+.label {
+    -fx-text-fill: #0F172A;
+}
+
+.button {
+    -fx-cursor: hand;
+    -fx-background-radius: 10;
+    -fx-padding: 10 18;
+}
+
+.button:hover {
+    -fx-opacity: 0.88;
+}
+
+.button:pressed {
+    -fx-opacity: 0.72;
+}
+
+.text-field,
+.password-field,
+.text-area {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+}
+
+.text-field:focused,
+.password-field:focused,
+.text-area:focused {
+    -fx-border-color: #2563EB;
+    -fx-border-width: 2;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.separator .line {
+    -fx-border-color: #E2E8F0;
+}
+
+.sidebar {
+    -fx-background-color: #0F172A;
+}
+
+.sidebar .label {
+    -fx-text-fill: #CBD5E1;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #CBD5E1;
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-radius: 10;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #1E293B;
+    -fx-opacity: 1;
+}
+
+.sidebar-button:focused {
+    -fx-border-color: #60A5FA;
+    -fx-border-radius: 10;
+}
+
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F172A;
+}
+
+.muted-label {
+    -fx-text-fill: #64748B;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 14;
+    -fx-padding: 20;
+}
+
+.primary-button {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.secondary-button {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #0F172A;
+    -fx-font-weight: bold;
+}
+
+.error-label {
+    -fx-text-fill: #DC2626;
+}
