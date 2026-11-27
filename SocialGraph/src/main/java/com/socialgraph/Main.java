@@ -37,7 +37,8 @@ public class Main extends Application {
             return thread;
         });
 
-    private final AtomicInteger requestGeneration = new AtomicInteger();
+    private final AtomicInteger requestGeneration =
+        new AtomicInteger();
 
     private static final int PAGE_SIZE = 20;
 
@@ -76,6 +77,7 @@ public class Main extends Application {
             popularService = new PopularUsersService(connection.getDriver());
 
             showWelcome();
+
         } catch (Exception ex) {
             showStartupError(ex.getMessage());
         }
@@ -84,11 +86,15 @@ public class Main extends Application {
     @Override
     public void stop() {
         executor.shutdownNow();
-        if (connection != null) connection.close();
+
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     private void applyStyles(Scene scene) {
         var css = getClass().getResource("/css/styles.css");
+
         if (css != null) {
             scene.getStylesheets().add(css.toExternalForm());
         }
@@ -109,19 +115,21 @@ public class Main extends Application {
     }
 
     private TextField field(String prompt) {
-        TextField field = new TextField();
-        field.setPromptText(prompt);
-        field.setPrefHeight(40);
-        return field;
+        TextField input = new TextField();
+        input.setPromptText(prompt);
+        input.setPrefHeight(40);
+        return input;
     }
 
     private Button button(String text, boolean primary) {
         Button button = new Button(text);
         button.setPrefHeight(40);
         button.setMinWidth(120);
+
         button.getStyleClass().add(
             primary ? "primary-button" : "secondary-button"
         );
+
         return button;
     }
 
@@ -174,13 +182,14 @@ public class Main extends Application {
 
         Button retry = button("Retry Connection", true);
         retry.setOnAction(e -> connectToDatabase());
-        box.getChildren().add(retry);
 
+        box.getChildren().add(retry);
         authScreen(box);
     }
 
     private void showWelcome() {
         VBox box = page("SocialGraph");
+
         box.getChildren().add(subtitle(
             "Connect, discover, and explore your network."
         ));
@@ -199,6 +208,7 @@ public class Main extends Application {
         VBox box = page("Welcome Back");
 
         TextField username = field("Username");
+
         PasswordField password = new PasswordField();
         password.setPromptText("Password");
 
@@ -211,11 +221,15 @@ public class Main extends Application {
         login.setOnAction(e -> {
             try {
                 currentUser = auth.login(
-                    username.getText(), password.getText()
+                    username.getText(),
+                    password.getText()
                 );
+
                 showDashboard();
+
             } catch (IllegalArgumentException ex) {
                 error.setText(ex.getMessage());
+
             } catch (Exception ex) {
                 showError(ex.getMessage());
             }
@@ -227,6 +241,7 @@ public class Main extends Application {
         box.getChildren().addAll(
             username, password, error, login, back
         );
+
         authScreen(box);
     }
 
@@ -261,13 +276,18 @@ public class Main extends Application {
 
             try {
                 currentUser = auth.register(
-                    name.getText(), username.getText(),
-                    email.getText(), password.getText(),
+                    name.getText(),
+                    username.getText(),
+                    email.getText(),
+                    password.getText(),
                     bio.getText()
                 );
+
                 showDashboard();
+
             } catch (IllegalArgumentException ex) {
                 error.setText(ex.getMessage());
+
             } catch (Exception ex) {
                 showError(ex.getMessage());
             }
@@ -279,6 +299,7 @@ public class Main extends Application {
             name, username, email, password,
             confirm, bio, error, create, back
         );
+
         authScreen(box);
     }
 
@@ -291,6 +312,7 @@ public class Main extends Application {
 
         button.setOnAction(e -> {
             requestGeneration.incrementAndGet();
+
             try {
                 action.run();
             } catch (Exception ex) {
@@ -311,11 +333,14 @@ public class Main extends Application {
 
         Label logo = new Label("SocialGraph");
         logo.setStyle(
-            "-fx-font-size: 24px; -fx-font-weight: bold;" +
+            "-fx-font-size: 24px;" +
+            "-fx-font-weight: bold;" +
             "-fx-text-fill: white;"
         );
 
-        Label account = new Label("@" + currentUser.getUsername());
+        Label account = new Label(
+            "@" + currentUser.getUsername()
+        );
         account.setStyle("-fx-text-fill: #94A3B8;");
 
         Region spacer = new Region();
@@ -354,6 +379,7 @@ public class Main extends Application {
         );
 
         VBox info = card();
+
         info.getChildren().addAll(
             heading("Your Account"),
             new Label("@" + currentUser.getUsername()),
@@ -366,15 +392,21 @@ public class Main extends Application {
     }
 
     private void showProfile() {
-        currentUser = auth.findUser(currentUser.getUsername());
+        currentUser = auth.findUser(
+            currentUser.getUsername()
+        );
 
         VBox content = page("My Profile");
         VBox info = card();
 
         Label bio = new Label(
-            "Bio: " + (currentUser.getBio().isBlank()
-                ? "No bio provided." : currentUser.getBio())
+            "Bio: " + (
+                currentUser.getBio().isBlank()
+                    ? "No bio provided."
+                    : currentUser.getBio()
+            )
         );
+
         bio.setWrapText(true);
 
         info.getChildren().addAll(
@@ -386,8 +418,8 @@ public class Main extends Application {
 
         Button edit = button("Edit Profile", true);
         edit.setOnAction(e -> showEditProfile());
-        info.getChildren().add(edit);
 
+        info.getChildren().add(edit);
         content.getChildren().add(info);
         setContent(content);
     }
@@ -416,11 +448,16 @@ public class Main extends Application {
             try {
                 currentUser = auth.updateProfile(
                     currentUser.getUsername(),
-                    name.getText(), email.getText(), bio.getText()
+                    name.getText(),
+                    email.getText(),
+                    bio.getText()
                 );
+
                 showProfile();
+
             } catch (IllegalArgumentException ex) {
                 error.setText(ex.getMessage());
+
             } catch (Exception ex) {
                 showError(ex.getMessage());
             }
@@ -429,8 +466,10 @@ public class Main extends Application {
         cancel.setOnAction(e -> showProfile());
 
         form.getChildren().addAll(
-            subtitle("Username: @" + currentUser.getUsername()
-                + " (cannot be changed)"),
+            subtitle(
+                "Username: @" + currentUser.getUsername()
+                + " (cannot be changed)"
+            ),
             new Label("Full Name"), name,
             new Label("Email"), email,
             new Label("Bio"), bio,
@@ -447,11 +486,13 @@ public class Main extends Application {
         row.getStyleClass().add("card");
 
         VBox info = new VBox(4);
+
         Label name = new Label(user.getName());
         name.setStyle("-fx-font-weight: bold;");
 
         info.getChildren().addAll(
-            name, subtitle("@" + user.getUsername())
+            name,
+            subtitle("@" + user.getUsername())
         );
 
         Region spacer = new Region();
@@ -461,8 +502,13 @@ public class Main extends Application {
         return row;
     }
 
+    // --------------------------------------------------
+    // UC-10 AND UC-11: USER DISCOVERY
+    // --------------------------------------------------
+
     private void showDiscoverUsers() {
         VBox content = page("Discover Users");
+
         content.getChildren().add(subtitle(
             "Search users and manage your connections."
         ));
@@ -479,7 +525,10 @@ public class Main extends Application {
         Button previous = button("Previous", false);
         Button next = button("Next", true);
 
-        HBox pagination = new HBox(15, previous, pageLabel, next);
+        HBox pagination = new HBox(
+            15, previous, pageLabel, next
+        );
+
         pagination.setAlignment(Pos.CENTER_LEFT);
 
         final int[] pageIndex = {0};
@@ -487,6 +536,7 @@ public class Main extends Application {
 
         refresh[0] = () -> {
             int requestId = requestGeneration.incrementAndGet();
+
             String query = search.getText();
             int requestedPage = pageIndex[0];
             String currentUsername = currentUser.getUsername();
@@ -499,9 +549,14 @@ public class Main extends Application {
                 @Override
                 protected SearchPage call() {
                     var users = searchService.searchWithFollowStatus(
-                        currentUsername, query, requestedPage, PAGE_SIZE
+                        currentUsername,
+                        query,
+                        requestedPage,
+                        PAGE_SIZE
                     );
+
                     long total = searchService.countUsers(query);
+
                     return new SearchPage(users, total);
                 }
             };
@@ -509,13 +564,16 @@ public class Main extends Application {
             task.setOnSucceeded(e -> {
                 if (requestId != requestGeneration.get()
                         || content.getScene() == null
-                        || currentUser == null) return;
+                        || currentUser == null) {
+                    return;
+                }
 
                 loading.setVisible(false);
                 SearchPage data = task.getValue();
 
                 long totalPages = Math.max(
-                    1, (data.total() + PAGE_SIZE - 1) / PAGE_SIZE
+                    1,
+                    (data.total() + PAGE_SIZE - 1) / PAGE_SIZE
                 );
 
                 if (requestedPage >= totalPages) {
@@ -525,8 +583,10 @@ public class Main extends Application {
                 }
 
                 count.setText(data.total() + " users found");
+
                 pageLabel.setText(
-                    "Page " + (requestedPage + 1) + " of " + totalPages
+                    "Page " + (requestedPage + 1)
+                    + " of " + totalPages
                 );
 
                 previous.setDisable(requestedPage == 0);
@@ -540,7 +600,9 @@ public class Main extends Application {
 
                     if (user.getUsername().equalsIgnoreCase(
                             currentUser.getUsername())) {
+
                         row.getChildren().add(subtitle("You"));
+
                     } else {
                         Button action = button(
                             item.following() ? "Unfollow" : "Follow",
@@ -576,6 +638,7 @@ public class Main extends Application {
 
                             followTask.setOnFailed(done -> {
                                 action.setDisable(false);
+
                                 showError(
                                     followTask.getException().getMessage()
                                 );
@@ -599,20 +662,25 @@ public class Main extends Application {
 
             task.setOnFailed(e -> {
                 if (requestId != requestGeneration.get()
-                        || content.getScene() == null) return;
+                        || content.getScene() == null) {
+                    return;
+                }
 
                 loading.setVisible(false);
                 count.setText("Unable to load users.");
+
                 showError(task.getException().getMessage());
             });
 
             executor.submit(task);
         };
 
-        search.textProperty().addListener((obs, old, value) -> {
-            pageIndex[0] = 0;
-            refresh[0].run();
-        });
+        search.textProperty().addListener(
+            (obs, old, value) -> {
+                pageIndex[0] = 0;
+                refresh[0].run();
+            }
+        );
 
         previous.setOnAction(e -> {
             if (pageIndex[0] > 0) {
@@ -637,6 +705,10 @@ public class Main extends Application {
         refresh[0].run();
     }
 
+    // --------------------------------------------------
+    // UC-7: FOLLOWERS AND FOLLOWING
+    // --------------------------------------------------
+
     private void showConnections() {
         VBox content = page("Connections");
         content.getChildren().add(heading("Following"));
@@ -658,9 +730,12 @@ public class Main extends Application {
             unfollow.setOnAction(e -> {
                 try {
                     social.unfollow(
-                        currentUser.getUsername(), user.getUsername()
+                        currentUser.getUsername(),
+                        user.getUsername()
                     );
+
                     showConnections();
+
                 } catch (Exception ex) {
                     showError(ex.getMessage());
                 }
@@ -690,14 +765,20 @@ public class Main extends Application {
         setContent(content);
     }
 
+    // --------------------------------------------------
+    // UC-8: MUTUAL CONNECTIONS
+    // --------------------------------------------------
+
     private void showMutualConnections() {
         VBox content = page("Mutual Connections");
+
         content.getChildren().add(subtitle(
             "Find users followed by both selected accounts."
         ));
 
         TextField first = field("First username");
         TextField second = field("Second username");
+
         first.setText(currentUser.getUsername());
 
         Button find = button("Find Mutual Connections", true);
@@ -705,9 +786,11 @@ public class Main extends Application {
 
         find.setOnAction(e -> {
             results.getChildren().clear();
+
             try {
                 List<User> shared = social.getMutualConnections(
-                    first.getText(), second.getText()
+                    first.getText(),
+                    second.getText()
                 );
 
                 results.getChildren().add(
@@ -723,6 +806,7 @@ public class Main extends Application {
                         subtitle("No mutual connections found.")
                     );
                 }
+
             } catch (Exception ex) {
                 showError(ex.getMessage());
             }
@@ -731,11 +815,17 @@ public class Main extends Application {
         content.getChildren().addAll(
             first, second, find, results
         );
+
         setContent(content);
     }
 
+    // --------------------------------------------------
+    // UC-9: FRIEND RECOMMENDATIONS
+    // --------------------------------------------------
+
     private void showRecommendations() {
         VBox content = page("Friend Recommendations");
+
         content.getChildren().add(subtitle(
             "Suggested accounts based on exactly two follow hops."
         ));
@@ -761,9 +851,12 @@ public class Main extends Application {
             follow.setOnAction(e -> {
                 try {
                     social.follow(
-                        currentUser.getUsername(), user.getUsername()
+                        currentUser.getUsername(),
+                        user.getUsername()
                     );
+
                     showRecommendations();
+
                 } catch (Exception ex) {
                     showError(ex.getMessage());
                 }
@@ -776,22 +869,32 @@ public class Main extends Application {
         setContent(content);
     }
 
+    // --------------------------------------------------
+    // UC-12: POPULAR USERS + UC-5 FOLLOW/UNFOLLOW
+    // --------------------------------------------------
+
     private void showPopularUsers() {
         VBox content = page("Popular Users");
+
         content.getChildren().add(subtitle(
             "Users ranked by incoming follower count."
         ));
 
         Label count = subtitle("Loading ranking...");
         Label pageLabel = subtitle("Page 1");
+
         ProgressIndicator loading = new ProgressIndicator();
+        loading.setPrefSize(24, 24);
 
         VBox results = new VBox(10);
 
         Button previous = button("Previous", false);
         Button next = button("Next", true);
 
-        HBox pagination = new HBox(15, previous, pageLabel, next);
+        HBox pagination = new HBox(
+            15, previous, pageLabel, next
+        );
+
         pagination.setAlignment(Pos.CENTER_LEFT);
 
         final int[] pageIndex = {0};
@@ -809,23 +912,30 @@ public class Main extends Application {
                 @Override
                 protected PopularPage call() {
                     var users = popularService.getPopularUsers(
-                        requestedPage, PAGE_SIZE
+                        requestedPage,
+                        PAGE_SIZE
                     );
+
                     long total = popularService.countUsers();
+
                     return new PopularPage(users, total);
                 }
             };
 
             task.setOnSucceeded(e -> {
                 if (requestId != requestGeneration.get()
-                        || content.getScene() == null) return;
+                        || content.getScene() == null
+                        || currentUser == null) {
+                    return;
+                }
 
                 loading.setVisible(false);
 
                 PopularPage data = task.getValue();
 
                 long totalPages = Math.max(
-                    1, (data.total() + PAGE_SIZE - 1) / PAGE_SIZE
+                    1,
+                    (data.total() + PAGE_SIZE - 1) / PAGE_SIZE
                 );
 
                 if (requestedPage >= totalPages) {
@@ -835,6 +945,7 @@ public class Main extends Application {
                 }
 
                 count.setText(data.total() + " users ranked");
+
                 pageLabel.setText(
                     "Page " + (requestedPage + 1)
                     + " of " + totalPages
@@ -847,28 +958,156 @@ public class Main extends Application {
 
                 for (int i = 0; i < data.users().size(); i++) {
                     var item = data.users().get(i);
+                    User user = item.user();
 
-                    HBox row = userRow(item.user());
-                    row.getChildren().add(
-                        subtitle(item.followers() + " followers")
+                    HBox row = userRow(user);
+
+                    Label followerCount = subtitle(
+                        item.followers() + " followers"
                     );
 
+                    row.getChildren().add(followerCount);
+
+                    if (user.getUsername().equalsIgnoreCase(
+                            currentUser.getUsername())) {
+
+                        row.getChildren().add(subtitle("You"));
+
+                    } else {
+                        Button followButton = button("Follow", true);
+                        followButton.setDisable(true);
+                        row.getChildren().add(followButton);
+
+                        String sourceUsername =
+                            currentUser.getUsername();
+
+                        String targetUsername =
+                            user.getUsername();
+
+                        Task<Boolean> statusTask = new Task<>() {
+                            @Override
+                            protected Boolean call() {
+                                return social.isFollowing(
+                                    sourceUsername,
+                                    targetUsername
+                                );
+                            }
+                        };
+
+                        statusTask.setOnSucceeded(done -> {
+                            if (content.getScene() == null
+                                    || currentUser == null
+                                    || !currentUser.getUsername()
+                                        .equalsIgnoreCase(
+                                            sourceUsername)) {
+                                return;
+                            }
+
+                            final boolean[] following = {
+                                statusTask.getValue()
+                            };
+
+                            updateFollowButton(
+                                followButton,
+                                following[0]
+                            );
+
+                            followButton.setDisable(false);
+
+                            followButton.setOnAction(event -> {
+                                followButton.setDisable(true);
+
+                                boolean wasFollowing = following[0];
+
+                                Task<Void> followTask = new Task<>() {
+                                    @Override
+                                    protected Void call() {
+                                        if (wasFollowing) {
+                                            social.unfollow(
+                                                sourceUsername,
+                                                targetUsername
+                                            );
+                                        } else {
+                                            social.follow(
+                                                sourceUsername,
+                                                targetUsername
+                                            );
+                                        }
+                                        return null;
+                                    }
+                                };
+
+                                followTask.setOnSucceeded(success -> {
+                                    if (content.getScene() == null
+                                            || currentUser == null
+                                            || !currentUser.getUsername()
+                                                .equalsIgnoreCase(
+                                                    sourceUsername)) {
+                                        return;
+                                    }
+
+                                    following[0] = !wasFollowing;
+
+                                    updateFollowButton(
+                                        followButton,
+                                        following[0]
+                                    );
+
+                                    followButton.setDisable(false);
+                                });
+
+                                followTask.setOnFailed(failure -> {
+                                    if (content.getScene() != null) {
+                                        followButton.setDisable(false);
+
+                                        showError(
+                                            followTask.getException()
+                                                .getMessage()
+                                        );
+                                    }
+                                });
+
+                                executor.submit(followTask);
+                            });
+                        });
+
+                        statusTask.setOnFailed(done -> {
+                            if (content.getScene() != null) {
+                                followButton.setText("Unavailable");
+                                followButton.setDisable(true);
+                            }
+                        });
+
+                        executor.submit(statusTask);
+                    }
+
                     VBox entry = new VBox(5);
+
                     entry.getChildren().addAll(
                         subtitle("Rank #" +
                             (requestedPage * PAGE_SIZE + i + 1)),
                         row
                     );
+
                     results.getChildren().add(entry);
+                }
+
+                if (data.users().isEmpty()) {
+                    results.getChildren().add(
+                        subtitle("No users found.")
+                    );
                 }
             });
 
             task.setOnFailed(e -> {
                 if (requestId != requestGeneration.get()
-                        || content.getScene() == null) return;
+                        || content.getScene() == null) {
+                    return;
+                }
 
                 loading.setVisible(false);
                 count.setText("Unable to load ranking.");
+
                 showError(task.getException().getMessage());
             });
 
@@ -898,14 +1137,38 @@ public class Main extends Application {
         refresh[0].run();
     }
 
+    private void updateFollowButton(
+            Button button,
+            boolean following) {
+
+        button.setText(
+            following ? "Unfollow" : "Follow"
+        );
+
+        button.getStyleClass().removeAll(
+            "primary-button",
+            "secondary-button"
+        );
+
+        button.getStyleClass().add(
+            following ? "secondary-button" : "primary-button"
+        );
+    }
+
+    // --------------------------------------------------
+    // UC-13: DEGREES OF SEPARATION
+    // --------------------------------------------------
+
     private void showDegrees() {
         VBox content = page("Degrees of Separation");
+
         content.getChildren().add(subtitle(
             "Find the shortest directed follow path (up to 4 hops)."
         ));
 
         TextField from = field("Starting username");
         TextField to = field("Destination username");
+
         from.setText(currentUser.getUsername());
 
         Button find = button("Find Shortest Path", true);
@@ -913,34 +1176,47 @@ public class Main extends Application {
 
         find.setOnAction(e -> {
             results.getChildren().clear();
+
             try {
                 List<User> path = social.findShortestPath(
-                    from.getText(), to.getText()
+                    from.getText(),
+                    to.getText()
                 );
 
                 if (path.isEmpty()) {
-                    results.getChildren().add(subtitle(
-                        "No connection found within 4 hops."
-                    ));
+                    results.getChildren().add(
+                        subtitle(
+                            "No connection found within 4 hops."
+                        )
+                    );
                     return;
                 }
 
+                int hops = path.size() - 1;
+
                 results.getChildren().add(
-                    heading("Degrees of separation: " +
-                        (path.size() - 1))
+                    heading(
+                        "Degrees of separation: " + hops
+                    )
                 );
 
                 StringBuilder display = new StringBuilder();
 
                 for (int i = 0; i < path.size(); i++) {
-                    if (i > 0) display.append(" -> ");
-                    display.append("@").append(
-                        path.get(i).getUsername()
-                    );
+                    if (i > 0) {
+                        display.append(" -> ");
+                    }
+
+                    display.append("@")
+                        .append(path.get(i).getUsername());
                 }
 
-                Label pathLabel = new Label(display.toString());
+                Label pathLabel = new Label(
+                    display.toString()
+                );
+
                 pathLabel.setWrapText(true);
+
                 results.getChildren().add(pathLabel);
 
             } catch (Exception ex) {
@@ -951,6 +1227,7 @@ public class Main extends Application {
         content.getChildren().addAll(
             from, to, find, results
         );
+
         setContent(content);
     }
 
